@@ -186,7 +186,7 @@ func TestTransaction(t *testing.T) {
 	}
 
 	// err = tx.Commit()
-	err = tx.Rollback() // Cancel do exec/query
+	err = tx.Rollback() // Cancel do transaction => exec/query
 	if err != nil {
 		panic(err)
 	}
