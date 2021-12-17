@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"testing"
 )
 
@@ -113,4 +114,48 @@ func TestSqlExecParameter(t *testing.T) {
 		panic(err)
 	}
 	fmt.Println("Success Insert")
+}
+
+func TestAutoIncrement(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+	ctx := context.Background()
+	email := "admin2@mail"
+	comments := "12345"
+	query := "insert into comments(email, comments) values(?, ?)"
+	result, err := db.ExecContext(ctx, query, email, comments)
+	if err != nil {
+		panic(err)
+	}
+	insertId, err := result.LastInsertId()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Success Insert Last Insert ID", insertId)
+}
+
+func TestPrepareStatement(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+	ctx := context.Background()
+	query := "insert into comments(email, comments) values(?, ?)"
+	statement, err := db.PrepareContext(ctx, query)
+	if err !=  nil {
+		panic(err)
+	}
+	defer statement.Close()
+
+	for i := 0; i < 10; i++ {
+		email := "daewu"+strconv.Itoa(i)+"@mail.com"
+		comments := "Komentar ke "+strconv.Itoa(i)
+		result, err := statement.ExecContext(ctx, email, comments)
+		if err != nil {
+			panic(err)
+		}
+		inserId, err := result.LastInsertId()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Last Inserted Comment ID", inserId)
+	}
 }
