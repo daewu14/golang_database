@@ -100,3 +100,17 @@ func TestSqlQueryParameter(t *testing.T) {
 		fmt.Println("Gagal Login")
 	}
 }
+
+func TestSqlExecParameter(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+	ctx := context.Background()
+	username := "admin2"
+	password := "12345"
+	query := "insert into user(username, password) values(?, ?)"
+	_, err := db.ExecContext(ctx, query, username, password)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Success Insert")
+}
